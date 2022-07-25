@@ -7,12 +7,11 @@ import { useSession, signOut } from "next-auth/react"
 
 function Header() {
   const { data: session, status } = useSession()
-  // console.log(session.user.name)
   return (
     <div className='sticky top-0 z-50 flex bg-white items-center p-2 lg:px5 shadow-md' >
         {/* Left */}
         <div className='flex items-center'>
-            <Image src={"https://links.papareact.com/5me"} width={40} height={40} layout="fixed" />
+            <Image src={"https://links.papareact.com/5me"} width={40} height={40} objectFit='cover' layout="fixed" />
             <div className='flex ml-2 items-center rounded-full bg-gray-100 p-2' >
                 <SearchIcon className='h-6 text-gray-600' />
                 <input className='hidden md:inline-flex ml-2 items-center bg-transparent outline-none placeholder-gray-500 flex-shrink' type='text' placeholder='Search Facebook' />
@@ -36,8 +35,12 @@ function Header() {
         {/* Right */}
         <div className='flex items-center sm:space-x-2 justify-end'>
           {/* profile picture */}
-          <Image onClick={() => signOut()} className='rounded-full' src={session.user.image} width={40} height={40} layout='fixed' />
-          <p className='whitesapce-nowrap font-semibold pr-3'>{session.user.name}</p>
+          {status === "authenticated" ? 
+          <div className='flex items-center sm:space-x-2 justify-end'>
+            <Image onClick={() => signOut()} className='rounded-full' src={session.user.image} width={40} height={40} layout='fixed' />
+            <p className='whitesapce-nowrap font-semibold pr-3 hidden md:block'>{session.user.name}</p>
+          </div>
+          :<p className='whitesapce-nowrap font-semibold pr-3'>You are not Logged In</p>}
           <ViewGridIcon className='icon' />
           <ChatIcon className='icon' />
           <BellIcon className='icon' />
