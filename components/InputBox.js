@@ -1,6 +1,5 @@
 import Image from 'next/image'
 import React, { useRef, useState } from 'react'
-import { useSession } from 'next-auth/react'
 import { EmojiHappyIcon } from '@heroicons/react/outline'
 import { CameraIcon, VideoCameraIcon } from '@heroicons/react/solid'
 import {
@@ -13,10 +12,11 @@ import {
 import { db, storage } from '../firebase'
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
 import { Oval } from 'react-loader-spinner'
+import { getAuth } from 'firebase/auth'
 
-function InputBox({ currentUser }) {
+function InputBox() {
+  const user = getAuth().currentUser
   const [progress, setProgress] = useState(0)
-  const { data: session } = useSession()
   const inputRef = useRef(null)
   const filepickerRef = useRef(null)
   const [imagetoPost, setimageToPost] = useState(null)
@@ -33,9 +33,9 @@ function InputBox({ currentUser }) {
       setProgress('Getting things ready...')
       const docRef = await addDoc(collection(db, 'posts'), {
         message: inputRef.current.value,
-        name: currentUser.displayName,
-        email: currentUser.email,
-        image: currentUser.photoURL,
+        name: user.displayName,
+        email: user.email,
+        image: user.photoURL,
         timestamp: serverTimestamp(),
       }).then((doc) => {
         if (imagetoPost) {
@@ -120,7 +120,7 @@ function InputBox({ currentUser }) {
 
       <div className='flex space-x-4 p-4 items-center '>
         <Image
-          src={currentUser.photoURL}
+          src={user.photoURL}
           className='rounded-full'
           height={40}
           width={40}
@@ -131,7 +131,7 @@ function InputBox({ currentUser }) {
             ref={inputRef}
             className='rounded-full h-12 bg-gray-100 flex-grow px-5 focus:outline-none'
             type={'text'}
-            placeholder={`What's on your mind, ${currentUser.displayName}?`}
+            placeholder={`What's on your mind, ${user.displayName}?`}
           />
           <button hidden type='submit' onClick={sendPost}>
             Submit
