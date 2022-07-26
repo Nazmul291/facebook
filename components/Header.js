@@ -61,7 +61,7 @@ function Header() {
         {/* profile picture */}
         {user ? (
           <div className='flex items-center sm:space-x-2 justify-end'>
-            <img
+            <Image
               onClick={() => logout()}
               className='rounded-full'
               src={user.photoURL}
