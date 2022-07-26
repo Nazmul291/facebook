@@ -8,7 +8,7 @@ import {db, storage} from '../firebase'
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
 import { Oval } from  'react-loader-spinner'
 
-function InputBox() {
+function InputBox({currentUser}) {
     const [progress, setProgress] = useState(0)
     const { data: session } = useSession();
     const inputRef = useRef(null);
@@ -24,15 +24,15 @@ function InputBox() {
         if (!inputRef.current.value) return;
         try {
             setIsLoading(true)
+            setProgress('Getting things ready...')
             const docRef = await addDoc(collection(db, "posts"), {
                 message: inputRef.current.value,
-                name : session.user.name,
-                email: session.user.email,
-                image: session.user.image,
+                name : currentUser.displayName,
+                email: currentUser.email,
+                image: currentUser.photoURL,
                 timestamp: serverTimestamp(),
             }).then(doc =>{
                 if (imagetoPost){
-                    
                     //funky upload stuff for image storage.bucket().file('/path/to/file');
                     const storageRef = ref(storage, `/posts/${doc.id}`);
                     const uploadTask = uploadBytesResumable(storageRef, imagetoPost)
@@ -102,9 +102,9 @@ function InputBox() {
         </div> :''}
         
         <div className='flex space-x-4 p-4 items-center '>
-            <Image src={session.user.image} className='rounded-full' height={40} width={40} layout='fixed' />
+            <Image src={currentUser.photoURL} className='rounded-full' height={40} width={40} layout='fixed' />
             <form className='flex flex-1'>
-                <input ref={inputRef} className='rounded-full h-12 bg-gray-100 flex-grow px-5 focus:outline-none' type={'text'} placeholder={`What's on your mind, ${session.user.name}?`} />
+                <input ref={inputRef} className='rounded-full h-12 bg-gray-100 flex-grow px-5 focus:outline-none' type={'text'} placeholder={`What's on your mind, $ {session.user.name}?`} />
                 <button hidden type='submit' onClick={sendPost}>Submit</button>
 
             </form>
